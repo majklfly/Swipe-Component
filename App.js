@@ -24,9 +24,26 @@ export default function App() {
     );
   };
 
+  const renderNoMoreCards = () => {
+    return (
+      <Card style={{ top: 200, position: "absolute" }}>
+        <Card.Title style={{ marginBottom: 10 }}>
+          There is no more content here
+        </Card.Title>
+        <Button backgroundColor="#03A9F4" title="Return to homepage"></Button>
+      </Card>
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <Deck data={Data.DATA} renderCard={renderCard} />
+      <Deck
+        data={Data.DATA}
+        renderCard={renderCard}
+        onSwipeRight={() => {}}
+        onSwipeLeft={() => {}}
+        renderNoMoreCards={renderNoMoreCards}
+      />
     </View>
   );
 }

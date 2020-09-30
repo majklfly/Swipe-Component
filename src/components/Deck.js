@@ -1,14 +1,27 @@
 import React, { useRef, useState } from "react";
-import { View, Animated, PanResponder, Dimensions } from "react-native";
+import {
+  View,
+  Animated,
+  PanResponder,
+  Dimensions,
+  StyleSheet,
+} from "react-native";
 
 const { width, height } = Dimensions.get("window");
 
 const SWIPE_THRESHOLD = 0.25 * width;
 
-export const Deck = ({ data, renderCard, onSwipeRight, onSwipeLeft }) => {
+export const Deck = ({
+  data,
+  renderCard,
+  onSwipeRight,
+  onSwipeLeft,
+  renderNoMoreCards,
+}) => {
   Deck.defaultProps = {
     onSwipeRight: () => {},
     onSwipeLeft: () => {},
+    renderNoMoreCards: () => {},
   };
 
   const [index, setIndex] = useState(0);
@@ -45,6 +58,11 @@ export const Deck = ({ data, renderCard, onSwipeRight, onSwipeLeft }) => {
   const onSwipeComplete = (direction) => {
     const item = data[index];
     direction === "right" ? onSwipeRight(item) : onSwipeLeft(item);
+    position.setValue({ x: 0, y: 0 });
+    setIndex((prev) => {
+      console.log(prev);
+      return prev + 1;
+    });
   };
 
   const resetPosition = () => {
@@ -64,21 +82,52 @@ export const Deck = ({ data, renderCard, onSwipeRight, onSwipeLeft }) => {
   };
 
   const renderCards = () => {
-    return data.map((item, index) => {
-      if (index === 0) {
+    if (index >= data.length) {
+      return renderNoMoreCards();
+    }
+
+    return data
+      .map((item, i) => {
+        if (i < index) {
+          return null;
+        }
+
+        if (i === index) {
+          return (
+            <Animated.View
+              key={item.id}
+              {...panResponder.panHandlers}
+              style={[getCardStyle(), styles.cardStyleFirst]}
+            >
+              {renderCard(item)}
+            </Animated.View>
+          );
+        }
         return (
           <Animated.View
+            style={[styles.cardStyle, { top: 10 * (i - index) }]}
             key={item.id}
-            {...panResponder.panHandlers}
-            style={getCardStyle()}
           >
             {renderCard(item)}
           </Animated.View>
         );
-      }
-      return renderCard(item);
-    });
+      })
+      .reverse();
   };
 
   return <View>{renderCards()}</View>;
 };
+
+const styles = StyleSheet.create({
+  cardStyle: {
+    position: "absolute",
+    width: width,
+    marginTop: "20%",
+  },
+  cardStyleFirst: {
+    position: "absolute",
+    width: width,
+    marginTop: "20%",
+    elevation: 10,
+  },
+});
