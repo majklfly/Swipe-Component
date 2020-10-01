@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Animated,
@@ -80,6 +80,8 @@ export const Deck = ({
 
     return { ...position.getLayout(), transform: [{ rotate }] };
   };
+
+  useEffect(() => {}, []);
 
   const renderCards = () => {
     if (index >= data.length) {
